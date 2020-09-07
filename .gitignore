@@ -11,6 +11,7 @@
 !libdiskfs/node-times.c
 !libdiskfs/priv.h
 !libdiskfs/opts-std-startup.c
+!libdiskfs/init-init.c
 libdiskfs/*.c~
 libdiskfs/*.h~
 

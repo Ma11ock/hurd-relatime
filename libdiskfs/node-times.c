@@ -38,7 +38,7 @@ diskfs_set_node_atime (struct node *np)
   else if (_diskfs_relatime)
   {
     /* Update atime if mtime is younger than atime. */
-    if (np->dn_stat.st_mtim.tv_sec > np->dn_stat.st_atime.tv_sec)
+    if (np->dn_stat.st_mtim.tv_sec > np->dn_stat.st_atim.tv_sec)
       result = 1;
     /* Update atime if ctime is younger than atime. */
     else if (np->dn_stat.st_ctim.tv_sec > np->dn_stat.st_atim.tv_sec)
