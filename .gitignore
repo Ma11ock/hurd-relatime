@@ -8,6 +8,7 @@
 !libdiskfs/node-times.c
 !libdiskfs/opts-std-runtime.c
 !libdiskfs/opts-common.c
+!libdiskfs/node-times.c
 libdiskfs/*.c~
 libdiskfs/*.h~
 

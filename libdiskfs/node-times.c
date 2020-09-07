@@ -25,12 +25,35 @@
 #include <maptime.h>
 
 /* If disk is not readonly and the noatime option is not enabled, set
-   NP->dn_set_atime.  */
+   NP->dn_set_atime.  If relatime is enabled, only set NP->dn_set_atime
+   if the atime has not been updated today, or if ctime or mtime are
+   more recent than atime */
 void
 diskfs_set_node_atime (struct node *np)
 {
+  int result = 0;
   if (!_diskfs_noatime && !diskfs_check_readonly ())
-    np->dn_set_atime = 1;
+    result = 1;
+  /* Relatime checks. */
+  else if (_diskfs_relatime)
+  {
+    /* Update atime if mtime is younger than atime. */
+    if (np->dn_stat.st_mtim.tv_sec > np->dn_stat.st_atime.tv_sec)
+      result = 1;
+    /* Update atime if ctime is younger than atime. */
+    else if (np->dn_stat.st_ctim.tv_sec > np->dn_stat.st_atim.tv_sec)
+      result = 1;
+    /* Update atime if current atime is more than 24 hours old. */
+    else
+    {
+      struct timeval t;
+      maptime_read (diskfs_mtime, &t);
+      if ((long)(t.tv_sec - np->dn_stat.st_atim.tv_sec) >= 24 * 60 * 60)
+          result = 1;
+    }
+  }
+
+  np->dn_set_atime = result;
 }
 
 /* If NP->dn_set_ctime is set, then modify NP->dn_stat.st_ctim
