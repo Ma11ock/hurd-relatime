@@ -83,7 +83,7 @@ set_opts (struct parse_hook *h)
   if (h->noinheritdirgroup != -1)
     _diskfs_no_inherit_dir_group = h->noinheritdirgroup;
   if (h->relatime != -1)
-      _diskfs_relatime = h->relatime;
+    _diskfs_relatime = h->relatime;
 
   free (h);
 

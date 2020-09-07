@@ -47,6 +47,7 @@ const struct argp_option diskfs_common_options[] =
    "Do not update file access times on disk for reads"},
   {"noatime",  0,   0, OPTION_ALIAS | OPTION_HIDDEN},
   {"atime", OPT_ATIME, 0, 0, "Do update file access times for reads normally"},
+  {"strictatime", 0, 0, OPTION_ALIAS | OPTION_HIDDEN},
   {"no-inherit-dir-group", OPT_NO_INHERIT_DIR_GROUP, 0, 0,
    "Create new nodes with gid of the process"},
   {"nogrpid",    0,   0, OPTION_ALIAS | OPTION_HIDDEN},
