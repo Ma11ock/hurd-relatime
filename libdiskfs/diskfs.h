@@ -1051,6 +1051,10 @@ diskfs_init_dir (struct node *dp, struct node *pdp, struct protid *cred);
    more recent than atime */
 void diskfs_set_node_atime (struct node *np);
 
+/* If relatime is set and `np' mtime or ctime are younger than atime, or if the
+   atime is older than 24 hours, return true. */
+int relatime_should_update (struct node *np);
+
 /* If NP->dn_set_ctime is set, then modify NP->dn_stat.st_ctim
    appropriately; do the analogous operation for atime and mtime as well. */
 void diskfs_set_node_times (struct node *np);

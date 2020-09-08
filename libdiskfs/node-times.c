@@ -24,6 +24,31 @@
 #include "priv.h"
 #include <maptime.h>
 
+/* If relatime is set and `np' mtime or ctime are younger than atime, or if the
+   atime is older than 24 hours, return true. */
+int
+relatime_should_update (struct node *np)
+{
+    if(!_diskfs_relatime)
+      return 0;
+
+    /* Update atime if mtime is younger than atime. */
+    if (np->dn_stat.st_mtim.tv_sec > np->dn_stat.st_atim.tv_sec)
+      return 1;
+    /* Update atime if ctime is younger than atime. */
+    else if (np->dn_stat.st_ctim.tv_sec > np->dn_stat.st_atim.tv_sec)
+      return 1;
+    /* Update atime if current atime is more than 24 hours old. */
+    else
+    {
+      struct timeval t;
+      maptime_read (diskfs_mtime, &t);
+      if ((long)(t.tv_sec - np->dn_stat.st_atim.tv_sec) >= 24 * 60 * 60)
+          return 1;
+    }
+    return 0;
+}
+
 /* If disk is not readonly and the noatime option is not enabled, set
    NP->dn_set_atime.  If relatime is enabled, only set NP->dn_set_atime
    if the atime has not been updated today, or if ctime or mtime are
@@ -34,25 +59,8 @@ diskfs_set_node_atime (struct node *np)
   int result = 0;
   if (!_diskfs_noatime && !diskfs_check_readonly ())
     result = 1;
-  /* Relatime checks. */
-  else if (_diskfs_relatime)
-  {
-    /* Update atime if mtime is younger than atime. */
-    if (np->dn_stat.st_mtim.tv_sec > np->dn_stat.st_atim.tv_sec)
-      result = 1;
-    /* Update atime if ctime is younger than atime. */
-    else if (np->dn_stat.st_ctim.tv_sec > np->dn_stat.st_atim.tv_sec)
-      result = 1;
-    /* Update atime if current atime is more than 24 hours old. */
-    else
-    {
-      struct timeval t;
-      maptime_read (diskfs_mtime, &t);
-      if ((long)(t.tv_sec - np->dn_stat.st_atim.tv_sec) >= 24 * 60 * 60)
-          result = 1;
-    }
-  }
-
+  else if (relatime_should_update (np))
+    result = 1;
   np->dn_set_atime = result;
 }
 
