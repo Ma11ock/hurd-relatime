@@ -80,10 +80,10 @@ set_opts (struct parse_hook *h)
     _diskfs_noexec = h->noexec;
   if (h->noatime != -1)
     _diskfs_noatime = h->noatime;
+  else if (h->relatime != -1)
+    _diskfs_relatime = h->relatime;
   if (h->noinheritdirgroup != -1)
     _diskfs_no_inherit_dir_group = h->noinheritdirgroup;
-  if (h->relatime != -1)
-    _diskfs_relatime = h->relatime;
 
   free (h);
 
@@ -102,11 +102,17 @@ parse_opt (int opt, char *arg, struct argp_state *state)
     case 'u': h->remount = 1; break;
     case 'S': h->nosuid = 1; break;
     case 'E': h->noexec = 1; break;
-    case 'A': h->noatime = 1; break;
+    case 'A':
+    {
+      if(h->relatime == 1)
+        h->relatime = -1;
+      h->noatime = 1;
+      break;
+    }
     case 'R': h->relatime = 1; break;
     case OPT_SUID_OK: h->nosuid = 0; break;
     case OPT_EXEC_OK: h->noexec = 0; break;
-    case OPT_ATIME: h->noatime = 0; break;
+    case OPT_ATIME: h->noatime = h->relatime = 0; break;
     case OPT_NO_INHERIT_DIR_GROUP: h->noinheritdirgroup = 1; break;
     case OPT_INHERIT_DIR_GROUP: h->noinheritdirgroup = 0; break;
     case 'n': h->sync_interval = 0; h->sync = 0; break;

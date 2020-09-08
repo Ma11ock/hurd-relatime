@@ -12,6 +12,9 @@
 !libdiskfs/priv.h
 !libdiskfs/opts-std-startup.c
 !libdiskfs/init-init.c
+!libdiskfs/diskfs.h
+!libdiskfs/opts-append-std.c
+!libdiskfs/file-statfs.c
 libdiskfs/*.c~
 libdiskfs/*.h~
 

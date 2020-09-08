@@ -98,7 +98,7 @@ parse_startup_opt (int opt, char *arg, struct argp_state *state)
       _diskfs_relatime = 1;
       break;
 
-    case OPT_ATIME:
+    case OPT_ATIME: /* strictatime. */
       _diskfs_noatime = 0;
       _diskfs_relatime = 0;
       break;
