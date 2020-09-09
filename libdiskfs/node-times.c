@@ -57,11 +57,10 @@ relatime_should_update (struct node *np)
 void
 diskfs_set_node_atime (struct node *np)
 {
-  int result = 0;
+  np->dn_set_atime = 0;
   if (!_diskfs_noatime && !diskfs_check_readonly ()
       && relatime_should_update (np))
-    result = 1;
-  np->dn_set_atime = result;
+    np->dn_set_atime = 1;
 }
 
 /* If NP->dn_set_ctime is set, then modify NP->dn_stat.st_ctim

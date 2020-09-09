@@ -104,8 +104,7 @@ parse_opt (int opt, char *arg, struct argp_state *state)
     case 'E': h->noexec = 1; break;
     case 'A':
     {
-      if(h->relatime == 1)
-        h->relatime = -1;
+      h->relatime = -1;
       h->noatime = 1;
       break;
     }
