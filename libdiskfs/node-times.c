@@ -25,12 +25,13 @@
 #include <maptime.h>
 
 /* If relatime is set and `np' mtime or ctime are younger than atime, or if the
-   atime is older than 24 hours, return true. */
+   atime is older than 24 hours, return true.
+   If relatime is not set, return true.  */
 int
 relatime_should_update (struct node *np)
 {
     if(!_diskfs_relatime)
-      return 0;
+      return 1;
 
     /* Update atime if mtime is younger than atime. */
     if (np->dn_stat.st_mtim.tv_sec > np->dn_stat.st_atim.tv_sec)
@@ -57,9 +58,8 @@ void
 diskfs_set_node_atime (struct node *np)
 {
   int result = 0;
-  if (!_diskfs_noatime && !diskfs_check_readonly ())
-    result = 1;
-  else if (relatime_should_update (np))
+  if (!_diskfs_noatime && !diskfs_check_readonly ()
+      && relatime_should_update (np))
     result = 1;
   np->dn_set_atime = result;
 }
