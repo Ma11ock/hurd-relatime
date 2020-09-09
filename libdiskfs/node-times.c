@@ -24,9 +24,9 @@
 #include "priv.h"
 #include <maptime.h>
 
-/* If relatime is set and `np' mtime or ctime are younger than atime, or if the
+/* If relatime is set and `np->mtime' or `np->ctime' are younger than atime, or if the
    atime is older than 24 hours, return true.
-   If relatime is not set, return true.  */
+   If relatime is not set, return true. */
 int
 relatime_should_update (struct node *np)
 {
