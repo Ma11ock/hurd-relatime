@@ -2,10 +2,10 @@
 This patch adds the 'relatime' and 'strictatime' options to the GNU Hurd.
 
 * What
-`relatime' is a filesystem mount option that turns off Unix access time updates if:
-- The file's last access time update was less then 24 hours ago
-- The file's mtime is older than its atime (mtime < atime)
-- The file's ctime is older than its atime (ctime < atime)
+`relatime' is a filesystem mount option that turns off Unix access time updates unless:
+- The file's last access time update was greater than 24 hours ago
+- The file's mtime is younger than its atime (mtime > atime)
+- The file's ctime is younger than its atime (ctime > atime)
 
 It increases filsystem speed and allows for fewer write cycles to a disk. 
 
