@@ -25,29 +25,37 @@
 #include <maptime.h>
 
 /* If relatime is set and `np->mtime' or `np->ctime' are younger than atime, or if the
-   atime is older than 24 hours, return true.
-   If relatime is not set, return true. */
-int
-relatime_should_update (struct node *np)
-{
-    if(!_diskfs_relatime)
-      return 1;
+   atime is older than 24 hours, return true. */
 
-    /* Update atime if mtime is younger than atime. */
-    if (np->dn_stat.st_mtim.tv_sec > np->dn_stat.st_atim.tv_sec)
-      return 1;
-    /* Update atime if ctime is younger than atime. */
-    else if (np->dn_stat.st_ctim.tv_sec > np->dn_stat.st_atim.tv_sec)
-      return 1;
-    /* Update atime if current atime is more than 24 hours old. */
-    else
-    {
-      struct timeval t;
-      maptime_read (diskfs_mtime, &t);
-      if ((long)(t.tv_sec - np->dn_stat.st_atim.tv_sec) >= 24 * 60 * 60)
-          return 1;
-    }
+/* If the disk is not readonly and noatime is not set, and
+   `np->dn_stat.st_mtim.tv_sec' and `np->dn_stat.st_ctim.tv_sec' are not
+   younger than `np->dn_stat.st_ctim.tv_sec', then return true. */
+int
+atime_should_update (struct node *np)
+{
+  if (_diskfs_noatime)
     return 0;
+
+  if (_diskfs_relatime)
+    {
+      /* Update atime if mtime is younger than atime. */
+      if (np->dn_stat.st_mtim.tv_sec > np->dn_stat.st_atim.tv_sec)
+        return 1;
+      /* Update atime if ctime is younger than atime. */
+      else if (np->dn_stat.st_ctim.tv_sec > np->dn_stat.st_atim.tv_sec)
+        return 1;
+      /* Update atime if current atime is more than 24 hours old. */
+      else
+      {
+        struct timeval t;
+        maptime_read (diskfs_mtime, &t);
+        if ((long)(t.tv_sec - np->dn_stat.st_atim.tv_sec) >= 24 * 60 * 60)
+            return 1;
+      }
+      return 0;
+    }
+
+  return 1; /* strictatime */
 }
 
 /* If disk is not readonly and the noatime option is not enabled, set
@@ -58,8 +66,7 @@ void
 diskfs_set_node_atime (struct node *np)
 {
   np->dn_set_atime = 0;
-  if (!_diskfs_noatime && !diskfs_check_readonly ()
-      && relatime_should_update (np))
+  if (!diskfs_check_readonly () && atime_should_update (np))
     np->dn_set_atime = 1;
 }
 
