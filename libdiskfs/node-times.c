@@ -24,9 +24,6 @@
 #include "priv.h"
 #include <maptime.h>
 
-/* If relatime is set and `np->mtime' or `np->ctime' are younger than atime, or if the
-   atime is older than 24 hours, return true. */
-
 /* If the disk is not readonly and noatime is not set, and
    `np->dn_stat.st_mtim.tv_sec' and `np->dn_stat.st_ctim.tv_sec' are not
    younger than `np->dn_stat.st_ctim.tv_sec', then return true. */
