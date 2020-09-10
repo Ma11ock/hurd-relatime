@@ -24,9 +24,11 @@
 #include "priv.h"
 #include <maptime.h>
 
-/* If the disk is not readonly and noatime is not set, and
-   `np->dn_stat.st_mtim.tv_sec' and `np->dn_stat.st_ctim.tv_sec' are not
-   younger than `np->dn_stat.st_ctim.tv_sec', then return true. */
+/* If the disk is not readonly and noatime is not set, then check relatime
+   conditions: if either `np->dn_stat.st_mtim.tv_sec' or
+   `np->dn_stat.st_ctim.tv_sec' is less than `np->dn_stat.st_atim.tv_sec',
+   or if the atime is greater than 24 hours old, return true.
+   */
 int
 atime_should_update (struct node *np)
 {

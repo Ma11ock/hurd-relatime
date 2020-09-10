@@ -1051,11 +1051,6 @@ diskfs_init_dir (struct node *dp, struct node *pdp, struct protid *cred);
    more recent than atime */
 void diskfs_set_node_atime (struct node *np);
 
-/* If the disk is not readonly and noatime is not set, and
-   `np->dn_stat.st_mtim.tv_sec' and `np->dn_stat.st_ctim.tv_sec' are not
-   younger than `np->dn_stat.st_ctim.tv_sec', then return true. */
-int atime_should_update (struct node *np);
-
 /* If NP->dn_set_ctime is set, then modify NP->dn_stat.st_ctim
    appropriately; do the analogous operation for atime and mtime as well. */
 void diskfs_set_node_times (struct node *np);
